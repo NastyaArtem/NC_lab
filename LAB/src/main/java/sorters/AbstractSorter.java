@@ -1,8 +1,16 @@
 package sorters;
 
-import java.util.Arrays;
 
-public class Sorters {
+public abstract class AbstractSorter{
+
+    public String nameOfSorter;
+
+    protected Integer swap(Integer a, Integer b){
+        return a;
+    }
+    public abstract Integer[] sort(Integer[] array);
+}
+/*public class Sorters {
 
     //bubble sort, process from the begin of array
     public Integer [] bubbleBegin(Integer [] array){
@@ -159,4 +167,4 @@ public class Sorters {
         return array;
     }
 
-}
+}*/
