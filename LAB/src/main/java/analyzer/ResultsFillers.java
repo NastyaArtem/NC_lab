@@ -5,7 +5,6 @@ public class ResultsFillers {
     private ResultsSorters[]  resultsSorters;//all result of sorters working
     ResultsFillers(int numberOfSorters){
 
-        filler = new String();
         resultsSorters = new ResultsSorters[numberOfSorters];
     }
 
@@ -17,19 +16,11 @@ public class ResultsFillers {
         this.resultsSorters = resultsSorters;
     }
 
-    String getFiller(){
-        return filler;
-    }
-
-    ResultsSorters[] getResultsSorters(){
-        return resultsSorters;
-    }
-
     @Override
     public String toString() {
-        String str = new String();
-        str = this.getFiller() + ":\n\n";
-        for(ResultsSorters temp: this.resultsSorters){
+        String str;
+        str = filler + ":\n\n";
+        for(ResultsSorters temp: resultsSorters){
             str += temp.toString();
         }
         str += "------------";

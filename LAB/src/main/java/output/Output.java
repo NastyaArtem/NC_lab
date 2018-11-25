@@ -4,8 +4,9 @@ import analyzer.Analyzer;
 import analyzer.ResultsFillers;
 
 public class Output {
-    Analyzer analyzer;
     public Output(int lenght){
+
+        Analyzer analyzer;
 
         analyzer = new Analyzer();
 

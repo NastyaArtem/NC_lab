@@ -4,7 +4,7 @@ import java.util.Random;
 
 //class for filling arrays
 public class Fillers {
-    public Integer [] sorted(int lenght){
+    public static Integer [] sorted(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
 
@@ -16,7 +16,7 @@ public class Fillers {
         return array;
     }
 
-    public Integer [] sortedWhithX(int lenght){
+    public static Integer [] sortedWhithX(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
 
@@ -31,7 +31,7 @@ public class Fillers {
         return array;
     }
 
-    public Integer [] reverseSorted(int lenght){
+    public static Integer [] reverseSorted(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
 
@@ -43,7 +43,7 @@ public class Fillers {
         return array;
     }
 
-    public Integer [] randomNumbers(int lenght){
+    public static Integer [] randomNumbers(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
 

@@ -1,7 +1,7 @@
 package analyzer;
 
 import fillers.Fillers;
-import sorters.Sorters;
+import sorters.*;
 
 import java.util.Arrays;
 
@@ -24,7 +24,7 @@ public class Analyzer {
     private int numberOfSorters = 0;
 
     //counting fillers and sorters amount
-    void amountOfFillersSorters(){
+    private void amountOfFillersSorters(){
         if(sorted)
             numberOfFillers++;
         if(sortedWithX)
@@ -67,107 +67,75 @@ public class Analyzer {
 
         this.fill(lenght);
     }
-    void fill(int lenghtArray){
-        Fillers fillers = new Fillers();
+    private void fill(int lenghtArray){
         Integer[] array;
         int i = 0;
         if(sorted){
-            array = fillers.sorted(lenghtArray);
+            array = Fillers.sorted(lenghtArray);
             results[i].setFiller("Sorted Array");
             results[i].setResultsSorters(sort(array));
             i++;
         }
         if (sortedWithX){
-            array = fillers.sortedWhithX(lenghtArray);
+            array = Fillers.sortedWhithX(lenghtArray);
             results[i].setFiller("Sorted Array with random number at the end");
             results[i].setResultsSorters(sort(array));
             i++;
         }
         if (reverseSorted){
-            array = fillers.reverseSorted(lenghtArray);
+            array = Fillers.reverseSorted(lenghtArray);
             results[i].setFiller("Reverse sorted Array");
             results[i].setResultsSorters(sort(array));
             i++;
         }
         if (randomNumbers){
-            array = fillers.randomNumbers(lenghtArray);
+            array = Fillers.randomNumbers(lenghtArray);
             results[i].setFiller("Array with random generate numbers");
             results[i].setResultsSorters(sort(array));
-            i++;
         }
     }
 
-    ResultsSorters[] sort(Integer[] array){
+    private ResultsSorters[] sort(Integer[] array){
         ResultsSorters[] resultsSorters = new ResultsSorters[numberOfSorters];
-        for (int i = 0; i < numberOfSorters; i++){
-            resultsSorters[i] = new ResultsSorters();
-        }
-        Sorters sorters = new Sorters();
-        int i = 0;
+
+        AbstractSorter sorter = new AbstractSorter() {
+            @Override
+            public Integer[] sort(Integer[] array) {
+                return array;
+            }
+        };
         if(bubbleBegin){
-            long startTime = System.currentTimeMillis();
-            sorters.bubbleBegin(Arrays.copyOf(array, array.length));
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Bubble Sort start begin");
-            //System.out.println(endTime  + " " +  startTime);
-            i++;
+            sorter = new FromBegin();
         }
         if(bubbleEnd){
-            long startTime = System.currentTimeMillis();
-            sorters.bubbleEnd(Arrays.copyOf(array, array.length));
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Bubble Sort start end");
-            i++;
+            sorter = new FromEnd();
         }
         if(quickSort){
-            long startTime = System.currentTimeMillis();
-            sorters.quickSort(Arrays.copyOf(array, array.length));
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Quick Sort");
-            i++;
+            sorter = new QuickSort();
         }
         if(javaSort){
-            long startTime = System.currentTimeMillis();
-            sorters.javaSort(Arrays.copyOf(array, array.length));
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Standard java sort");
-            i++;
+            sorter = new JavaSort();
         }
         if(mergeBubbleBegin){
-            long startTime = System.currentTimeMillis();
-            sorters.merge(Arrays.copyOf(array, array.length), "BubbleBegin");
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Bubble Sort start begin with merge");
-            i++;
+            sorter = new MergeBubbleFromBegin();
         }
         if(mergeBubbleEnd){
-            long startTime = System.currentTimeMillis();
-            sorters.merge(Arrays.copyOf(array, array.length), "BubbleEnd");
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Bubble Sort start end with merge");
-            i++;
+            sorter = new MergeBubbleFromEnd();
         }
         if(mergeQuickSort){
-            long startTime = System.currentTimeMillis();
-            sorters.merge(Arrays.copyOf(array, array.length), "QuickSort");
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Quick Sort with merge");
-            i++;
+            sorter = new MergeQuickSort();
         }
-        if(mergeJavaSort){
+        if(mergeJavaSort) {
+            sorter = new MergeJavaSort();
+        }
+
+        for (int i = 0; i < numberOfSorters; i++){
+            resultsSorters[i] = new ResultsSorters();
             long startTime = System.currentTimeMillis();
-            sorters.merge(Arrays.copyOf(array, array.length), "JavaSort");
+            sorter.sort(Arrays.copyOf(array, array.length));
             long endTime = System.currentTimeMillis();
             resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort("Standard java sort with merge");
-            i++;
+            resultsSorters[i].setSort(sorter.nameOfSorter);
         }
 
         return resultsSorters;
