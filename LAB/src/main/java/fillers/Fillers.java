@@ -2,8 +2,11 @@ package fillers;
 
 import java.util.Random;
 
+
 //class for filling arrays
 public class Fillers {
+
+    @FillerAnnotation(name = "Sorted array")
     public static Integer [] sorted(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
@@ -16,6 +19,7 @@ public class Fillers {
         return array;
     }
 
+    @FillerAnnotation(name = "Sorted array with random element at the end")
     public static Integer [] sortedWhithX(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
@@ -31,6 +35,7 @@ public class Fillers {
         return array;
     }
 
+    @FillerAnnotation(name = "Reverse sorted array")
     public static Integer [] reverseSorted(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];
@@ -43,6 +48,7 @@ public class Fillers {
         return array;
     }
 
+    @FillerAnnotation(name = "Array which consist of random elements")
     public static Integer [] randomNumbers(int lenght){
         Random random = new Random();
         Integer[] array = new Integer[lenght];

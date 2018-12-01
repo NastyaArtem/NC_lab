@@ -1,36 +1,24 @@
 package output;
 
 import analyzer.Analyzer;
-import analyzer.ResultsFillers;
+import com.sun.org.apache.bcel.internal.util.ClassPath;
+import org.reflections.Reflections;
+import sorters.AbstractSorter;
+
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
 public class Output {
     public Output(int lenght){
 
-        Analyzer analyzer;
+        Analyzer analyzer = new Analyzer();
 
-        analyzer = new Analyzer();
 
-        //set which fillers and sorters needed to analyze
-        analyzer.sorted = true;
-        analyzer.sortedWithX  = true;
-        analyzer.reverseSorted = true;
-        analyzer.randomNumbers = true;
 
-        analyzer.bubbleBegin = true;
-        analyzer.bubbleEnd = true;
-        analyzer.quickSort = true;
-        analyzer.javaSort = true;
 
-        analyzer.mergeBubbleBegin = true;
-        analyzer.mergeBubbleEnd = true;
-        analyzer.mergeQuickSort = true;
-        analyzer.mergeJavaSort = true;
 
-        //counting results
-        analyzer.proc(lenght);
-
-        //output all results
-        for(ResultsFillers temp: analyzer.results)
-            System.out.println(temp.toString());
     }
 }
