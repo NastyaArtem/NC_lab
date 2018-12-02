@@ -1,145 +1,83 @@
 package analyzer;
 
 import fillers.Fillers;
+import org.reflections.Reflections;
 import sorters.*;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
 
 public class Analyzer {
-    //variables for analyze choose fillers and sorters
-    public boolean sorted;
-    public boolean sortedWithX;
-    public boolean reverseSorted;
-    public boolean randomNumbers;
-    public boolean bubbleBegin;
-    public boolean bubbleEnd;
-    public boolean quickSort;
-    public boolean javaSort;
-    public boolean mergeBubbleBegin;
-    public boolean mergeBubbleEnd;
-    public boolean mergeQuickSort;
-    public boolean mergeJavaSort;
 
-    private int numberOfFillers = 0;
-    private int numberOfSorters = 0;
+    public Analyzer() {
 
-    //counting fillers and sorters amount
-    private void amountOfFillersSorters(){
-        if(sorted)
-            numberOfFillers++;
-        if(sortedWithX)
-            numberOfFillers++;
-        if(reverseSorted)
-            numberOfFillers++;
-        if(randomNumbers)
-            numberOfFillers++;
+        // iterator for number of cycle with different length array
+        int N = 1;
 
-        if(bubbleBegin)
-            numberOfSorters++;
-        if(bubbleEnd)
-            numberOfSorters++;
-        if(quickSort)
-            numberOfSorters++;
-        if(javaSort)
-            numberOfSorters++;
-        if(mergeBubbleBegin)
-            numberOfSorters++;
-        if(mergeBubbleEnd)
-            numberOfSorters++;
-        if(mergeQuickSort)
-            numberOfSorters++;
-        if(mergeJavaSort)
-            numberOfSorters++;
-    }
+        //length of arrays for sorting
+        int length = 10;
+        while(N < 4){
+            length *= 10;
 
-    //array for saving results of sorters work
-    public ResultsFillers[] results;
+            Set<Class<? extends AbstractSorter>> allClasses = getClasses();
 
+            //cycle for all classes which extends Abstract Sorter
+            for(Class<? extends AbstractSorter> currentSortClass: allClasses){
 
-    public void proc(int lenght){
-        amountOfFillersSorters();
+                //pass all abstract classes
+                if(!Modifier.isAbstract(currentSortClass.getModifiers())){
+                    try{
 
-        //array initialization
-        results = new ResultsFillers[numberOfFillers];
-        for(int i = 0; i < numberOfFillers; i++){
-            results[i] = new ResultsFillers(numberOfSorters);
-        }
+                        //exactly method sort
+                        Method methodSort = currentSortClass.getMethod("sort", Integer[].class);
 
-        this.fill(lenght);
-    }
-    private void fill(int lenghtArray){
-        Integer[] array;
-        int i = 0;
-        if(sorted){
-            array = Fillers.sorted(lenghtArray);
-            results[i].setFiller("Sorted Array");
-            results[i].setResultsSorters(sort(array));
-            i++;
-        }
-        if (sortedWithX){
-            array = Fillers.sortedWhithX(lenghtArray);
-            results[i].setFiller("Sorted Array with random number at the end");
-            results[i].setResultsSorters(sort(array));
-            i++;
-        }
-        if (reverseSorted){
-            array = Fillers.reverseSorted(lenghtArray);
-            results[i].setFiller("Reverse sorted Array");
-            results[i].setResultsSorters(sort(array));
-            i++;
-        }
-        if (randomNumbers){
-            array = Fillers.randomNumbers(lenghtArray);
-            results[i].setFiller("Array with random generate numbers");
-            results[i].setResultsSorters(sort(array));
-        }
-    }
+                        //seeking fillers
+                        Method[] methods = (new Fillers()).getClass().getMethods();
+                        for(Method currentFiller: methods){
 
-    private ResultsSorters[] sort(Integer[] array){
-        ResultsSorters[] resultsSorters = new ResultsSorters[numberOfSorters];
+                            Annotation[] annotations = currentFiller.getDeclaredAnnotations();
+                            for(Annotation fillerAnnotation: annotations){
+                                try {
 
-        AbstractSorter sorter = new AbstractSorter() {
-            @Override
-            public Integer[] sort(Integer[] array) {
-                return array;
+                                    //initialization current array
+                                    Integer[] currentArray = (Integer[]) currentFiller.invoke(null, length);
+                                    try{
+                                        //sorting current array
+                                        methodSort.invoke(currentSortClass.newInstance(), (Object) currentArray);
+                                    }catch (InstantiationException e){
+                                        e.printStackTrace();
+                                    }
+                                }catch (IllegalAccessException e){
+                                    e.printStackTrace();
+                                }
+                                catch (InvocationTargetException e){
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+
+                    }catch(NoSuchMethodException e){
+                        e.printStackTrace();
+                    }
+                }
             }
-        };
-        if(bubbleBegin){
-            sorter = new FromBegin();
+            N ++;
         }
-        if(bubbleEnd){
-            sorter = new FromEnd();
-        }
-        if(quickSort){
-            sorter = new QuickSort();
-        }
-        if(javaSort){
-            sorter = new JavaSort();
-        }
-        if(mergeBubbleBegin){
-            sorter = new MergeBubbleFromBegin();
-        }
-        if(mergeBubbleEnd){
-            sorter = new MergeBubbleFromEnd();
-        }
-        if(mergeQuickSort){
-            sorter = new MergeQuickSort();
-        }
-        if(mergeJavaSort) {
-            sorter = new MergeJavaSort();
-        }
-
-        for (int i = 0; i < numberOfSorters; i++){
-            resultsSorters[i] = new ResultsSorters();
-            long startTime = System.currentTimeMillis();
-            sorter.sort(Arrays.copyOf(array, array.length));
-            long endTime = System.currentTimeMillis();
-            resultsSorters[i].setResult(endTime - startTime);
-            resultsSorters[i].setSort(sorter.nameOfSorter);
-        }
-
-        return resultsSorters;
     }
 
+
+    // seeking all sub classes of Abstract Sorter
+    private Set<Class <? extends AbstractSorter>>getClasses (){
+        Reflections reflections = new Reflections("sorters");
+        return reflections.getSubTypesOf(AbstractSorter.class);
+
+    }
 
 }
+
