@@ -16,45 +16,68 @@ import java.util.Set;
 public class Analyzer {
 
     public Analyzer() {
-        int N = 4;
-        Fillers fillers = new Fillers();
-        Method[] methods = fillers.getClass().getMethods();
+
+        // iterator for number of cycle with different length array
+        int N = 1;
+
+        //length of arrays for sorting
         int length = 10;
-        for (int i = 0; i < N; i++) {
+        while(N < 4){
             length *= 10;
-            for (Method x : methods) {
-                Annotation[] annotations = x.getDeclaredAnnotations();
-                for (Annotation an : annotations) {
 
-                    try {
-                        Integer[] resultArray = (Integer[]) x.invoke(fillers, length);
+            Set<Class<? extends AbstractSorter>> allClasses = getClasses();
 
-                        Reflections reflections = new Reflections("sorters");
-                        Set<Class<? extends AbstractSorter>> allClasses = reflections.getSubTypesOf(AbstractSorter.class);
+            //cycle for all classes which extends Abstract Sorter
+            for(Class<? extends AbstractSorter> currentSortClass: allClasses){
 
+                //pass all abstract classes
+                if(!Modifier.isAbstract(currentSortClass.getModifiers())){
+                    try{
 
-                        for (Class<? extends AbstractSorter> currentClass : allClasses) {
-                            if (!Modifier.isAbstract(currentClass.getModifiers())) {
-                                //process
+                        //exactly method sort
+                        Method methodSort = currentSortClass.getMethod("sort", Integer[].class);
+
+                        //seeking fillers
+                        Method[] methods = (new Fillers()).getClass().getMethods();
+                        for(Method currentFiller: methods){
+
+                            Annotation[] annotations = currentFiller.getDeclaredAnnotations();
+                            for(Annotation fillerAnnotation: annotations){
                                 try {
-                                    Method sortMethod = currentClass.getMethod("sort", Integer[].class);
-                                    System.out.println(currentClass.getName() + " " + x.getName() + " " + length);
-                                } catch (NoSuchMethodException e) {
+
+                                    //initialization current array
+                                    Integer[] currentArray = (Integer[]) currentFiller.invoke(null, length);
+                                    try{
+                                        //sorting current array
+                                        methodSort.invoke(currentSortClass.newInstance(), (Object) currentArray);
+                                    }catch (InstantiationException e){
+                                        e.printStackTrace();
+                                    }
+                                }catch (IllegalAccessException e){
                                     e.printStackTrace();
                                 }
-
+                                catch (InvocationTargetException e){
+                                    e.printStackTrace();
+                                }
                             }
                         }
 
-
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
+                    }catch(NoSuchMethodException e){
                         e.printStackTrace();
                     }
                 }
             }
+            N ++;
         }
     }
+
+
+    // seeking all sub classes of Abstract Sorter
+    private Set<Class <? extends AbstractSorter>>getClasses (){
+        Reflections reflections = new Reflections("sorters");
+        return reflections.getSubTypesOf(AbstractSorter.class);
+
+    }
+
 }
 

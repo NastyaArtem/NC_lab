@@ -12,13 +12,8 @@ import java.util.List;
 import java.util.Set;
 
 public class Output {
-    public Output(int lenght){
+    public Output(){
 
         Analyzer analyzer = new Analyzer();
-
-
-
-
-
     }
 }
