@@ -1,24 +1,39 @@
 package sorters;
 
+/**
+ * Class extends {@link AbstractSorter}. That means that it needed to override method sort.<br>
+ *     It uses recurse algorithm of quick sort
+ * @author Artemenko Nastya
+ */
 public class QuickSort extends AbstractSorter {
 
-    public QuickSort(){
+    public QuickSort() {
         nameOfSorter = "Quick Sort";
     }
+
+    /**
+     * @param array that is sorting
+     * @return sorted array
+     */
     @Override
     public Integer[] sort(Integer[] array) {
-        quickSortRec(0, array.length, array);
+        try {
+            quickSortRec(0, array.length, array);
+
+        } catch (NullPointerException e) {
+            System.out.println("Array for sorting is null");
+        }
         return array;
     }
 
-    private Integer quickSortProc(int left, int right, Integer[] array){
+    private Integer quickSortProc(int left, int right, Integer[] array) {
         int current = left;
         int pivot = array[right - 1];
         int wall = left;
-        for(int i = left; i < right; i++){
-            if(array[current] >= pivot){
+        for (int i = left; i < right; i++) {
+            if (array[current] >= pivot) {
                 current++;
-            }else{
+            } else {
                 array[current] = swap(array[wall], array[wall] = array[current]);
                 current++;
                 wall++;
@@ -28,14 +43,14 @@ public class QuickSort extends AbstractSorter {
         return wall;
     }
 
-    private void quickSortRec(int left, int right, Integer[] array){
+    private void quickSortRec(int left, int right, Integer[] array) {
 
         int pivotIndex = quickSortProc(left, right, array);
 
-        if((pivotIndex - left) > 1){
+        if ((pivotIndex - left) > 1) {
             quickSortRec(left, pivotIndex, array);
         }
-        if((right - pivotIndex) > 1){
+        if ((right - pivotIndex) > 1) {
             quickSortRec(pivotIndex + 1, right, array);
         }
     }
