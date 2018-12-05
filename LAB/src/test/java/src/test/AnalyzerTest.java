@@ -13,18 +13,18 @@ class AnalyzerTest {
     @Test
     public void timeOutForThreeIterations(){
         Analyzer analyzer = new Analyzer();
-        assertTimeout(Duration.ofSeconds(10), () -> { analyzer.analize(3);});
+        assertTimeout(Duration.ofSeconds(10), () -> { analyzer.analize();});
     }
 
     @Test
     public void timeOutFortwoIterations(){
         Analyzer analyzer = new Analyzer();
-        assertTimeout(Duration.ofSeconds(5), () -> { analyzer.analize(2);});
+        assertTimeout(Duration.ofSeconds(5), () -> { analyzer.analize();});
     }
 
     @Test
     public void checkThrows() {
-        Assertions.assertThrows(StackOverflowError.class, () -> {new Analyzer().analize(5);});
+        Assertions.assertThrows(StackOverflowError.class, () -> {new Analyzer().analize();});
     }
 
 }
