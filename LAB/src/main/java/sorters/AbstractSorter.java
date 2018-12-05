@@ -7,7 +7,7 @@ package sorters;
  */
 public abstract class AbstractSorter{
 
-    public String nameOfSorter;
+    protected String nameOfSorter;
 
     /**
      * function for replace 2 variables.<br>
@@ -26,4 +26,9 @@ public abstract class AbstractSorter{
      * @return sorted array
      */
     public abstract Integer[] sort(Integer[] array);
+
+    @Override
+    public String toString() {
+        return nameOfSorter;
+    }
 }

@@ -7,7 +7,7 @@ package sorters;
  */
 public class FromEnd extends BubbleSorter {
     public FromEnd(){
-        nameOfSorter  = "Bubble sort, sorting start from begin";
+        nameOfSorter  = "Bubble sort, sorting start from end";
     }
 
     /**
