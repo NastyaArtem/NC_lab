@@ -3,8 +3,8 @@ package output;
 import analyzer.Analyzer;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.ss.usermodel.charts.ChartLegend;
-import org.apache.poi.ss.usermodel.charts.LegendPosition;
+import org.apache.poi.ss.usermodel.charts.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
 
@@ -22,6 +22,7 @@ public class Output {
     public static final String excelFilePath = "./NC_Lab_RESULTS.xlsx";
     private Map<String, Map<String, List<Long>>> result;
     Analyzer analyzer;
+    private int amountOfRows;
 
     public Output() {
 
@@ -39,33 +40,35 @@ public class Output {
 
             Row headerRow = sheet.createRow(0);
 
-            int iteratorForNameOfColumns = 0;
-            Cell zeroCell = headerRow.createCell(iteratorForNameOfColumns);
+            int iteratorForColumns = 0;
+            Cell zeroCell = headerRow.createCell(iteratorForColumns);
             zeroCell.setCellValue("Sorter name");
 
             int length = analyzer.getBeginLength();
             while (length < analyzer.getMaxArrayLength()) {
-                iteratorForNameOfColumns++;
-                Cell cell = headerRow.createCell(iteratorForNameOfColumns);
+                iteratorForColumns++;
+                Cell cell = headerRow.createCell(iteratorForColumns);
                 cell.setCellValue(length *= analyzer.getIncreaseValue());
             }
 
             setDateIntoExcelFile(fillers, sheet);
 
-            for (int i = 0; i < iteratorForNameOfColumns; i++) {
+            for (int i = 0; i < iteratorForColumns; i++) {
                 sheet.autoSizeColumn(i);
             }
+
+            createChart(sheet, iteratorForColumns);
 
         }
         fileOpenAndWrite(workbook);
     }
 
     private void setDateIntoExcelFile(Map.Entry<String, Map<String, List<Long>>> fillers, Sheet sheet) {
-        int rowNumber = 1;
+        amountOfRows = 1;
 
         for (Map.Entry<String, List<Long>> sorters : fillers.getValue().entrySet()) {
 
-            Row row = sheet.createRow(rowNumber++);
+            Row row = sheet.createRow(amountOfRows++);
             int iteratorForListResults = 0;
             row.createCell(iteratorForListResults).setCellValue(sorters.getKey());
 
@@ -76,15 +79,38 @@ public class Output {
         }
     }
 
-   /* private void CreateChart(Sheet sheet){
+    private void createChart(Sheet sheet, int amountOfColumns){
         Drawing drawing = sheet.createDrawingPatriarch();
-        ClientAnchor anchor = drawing.createAnchor(0, 0, 0, 0, 0, 5, 10, 15);
+        ClientAnchor anchor = drawing.createAnchor(0, 1, 0, 0, 0, amountOfRows + 3, 15, amountOfRows + 25);
         Chart chart = drawing.createChart(anchor);
         ChartLegend legend = chart.getOrCreateLegend();
-        legend.setPosition(LegendPosition.BOTTOM);
+        legend.setPosition(LegendPosition.RIGHT);
+
+        LineChartData data = chart.getChartDataFactory().createLineChartData();
+
+        ChartAxis bottomAxis = chart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
+        ValueAxis leftAxis = chart.getChartAxisFactory(). createValueAxis(AxisPosition.LEFT);
+        leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
 
 
-    }*/
+        ChartDataSource<Number> xs = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(0, 0, 1, amountOfColumns ));
+        /*List<ChartDataSource<Number>> ys = new ArrayList<ChartDataSource<Number>>();
+        for(int i = 0; i < amountOfRows; i++) {
+
+            ys.add(DataSources.fromNumericCellRange(sheet, new CellRangeAddress(i, i, 0, amountOfColumns - 1)));
+        }*/
+
+        for(int i = 1; i < amountOfRows; i++){
+            LineChartSeries series = data.addSeries(xs, DataSources.fromNumericCellRange(sheet, new CellRangeAddress(i, i, 1, amountOfColumns )));
+            series.setTitle(sheet.getRow(i).getCell(0).getStringCellValue());
+        }
+
+
+
+
+        chart.plot(data, new ChartAxis[] { bottomAxis, leftAxis });
+
+    }
 
     private void fileOpenAndWrite(Workbook workbook) {
         // Write the output to a file
