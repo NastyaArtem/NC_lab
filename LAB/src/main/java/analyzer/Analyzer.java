@@ -9,6 +9,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.sql.SQLOutput;
 import java.util.*;
 
 /**
@@ -37,37 +38,41 @@ public class Analyzer {
 
         length = beginLength;
 
-        Method[] fillersMethods = getFillerMethods();
-        Set<Class<? extends AbstractSorter>> allSortClasses = getSorterClasses();
+        try {
+            Method[] fillersMethods = getFillerMethods();
+            Set<Class<? extends AbstractSorter>> allSortClasses = getSorterClasses();
 
-        //cycle for all classes which extends Abstract Sorter
-        for (Method currentFillerMethod : fillersMethods) {
+            //cycle for all classes which extends Abstract Sorter
+            for (Method currentFillerMethod : fillersMethods) {
 
-            Annotation[] annotations = currentFillerMethod.getDeclaredAnnotations();
-            for (Annotation fillerAnnotation : annotations) {
+                Annotation[] annotations = currentFillerMethod.getDeclaredAnnotations();
+                for (Annotation fillerAnnotation : annotations) {
 
-                Map<String, List<Long>> allSortersResult = new TreeMap();
-                for (Class<? extends AbstractSorter> currentSortClass : allSortClasses) {
+                    Map<String, List<Long>> allSortersResult = new TreeMap();
+                    for (Class<? extends AbstractSorter> currentSortClass : allSortClasses) {
 
-                    //pass all abstract classes
-                    if (!Modifier.isAbstract(currentSortClass.getModifiers())) {
-                        List<Long> everyLengthResult = new ArrayList<>();
-                        while (length < MaxArrayLength) {
-                            length *= increaseValue;
-                            sortingProcess(currentSortClass, currentFillerMethod, everyLengthResult);
+                        //pass all abstract classes
+                        if (!Modifier.isAbstract(currentSortClass.getModifiers())) {
+                            List<Long> everyLengthResult = new ArrayList<>();
+                            //while (length < MaxArrayLength) {
+                                length *= increaseValue;
+                                sortingProcess(currentSortClass, currentFillerMethod, everyLengthResult);
 
+                           // }
+                            try {
+                                allSortersResult.put(currentSortClass.newInstance().toString(), everyLengthResult);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            length = beginLength;
                         }
-                        try {
-                            allSortersResult.put(currentSortClass.newInstance().toString(), everyLengthResult);
-                        }catch (Exception e){
-                            e.printStackTrace();
-                        }
-                        length = beginLength;
                     }
-                }
 
-                result.put(currentFillerMethod.getAnnotation(FillerAnnotation.class).name(), allSortersResult);
+                    result.put(currentFillerMethod.getAnnotation(FillerAnnotation.class).name(), allSortersResult);
+                }
             }
+        }catch (StackOverflowError e){
+            System.out.println("Array length is bigger than program can process");
         }
         return result;
 
