@@ -13,9 +13,8 @@ public class MergeQuickSort extends Merge{
     }
 
     @Override
-    protected void halfsFill(Integer []leftArray, Integer[] rightArray) {
+    protected void halfsFill(Integer []array) {
         QuickSort quickSort = new QuickSort();
-        leftArray = quickSort.sort(leftArray);
-        rightArray = quickSort.sort(rightArray);
+        array = quickSort.sort(array);
     }
 }

@@ -1,14 +1,10 @@
 package output;
 
 import analyzer.Analyzer;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.charts.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
-import org.apache.poi.xssf.usermodel.charts.XSSFChartLegend;
-
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
@@ -91,22 +87,13 @@ public class Output {
         ChartAxis bottomAxis = chart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
         ValueAxis leftAxis = chart.getChartAxisFactory(). createValueAxis(AxisPosition.LEFT);
         leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-
-
         ChartDataSource<Number> xs = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(0, 0, 1, amountOfColumns ));
-        /*List<ChartDataSource<Number>> ys = new ArrayList<ChartDataSource<Number>>();
-        for(int i = 0; i < amountOfRows; i++) {
 
-            ys.add(DataSources.fromNumericCellRange(sheet, new CellRangeAddress(i, i, 0, amountOfColumns - 1)));
-        }*/
 
         for(int i = 1; i < amountOfRows; i++){
             LineChartSeries series = data.addSeries(xs, DataSources.fromNumericCellRange(sheet, new CellRangeAddress(i, i, 1, amountOfColumns )));
             series.setTitle(sheet.getRow(i).getCell(0).getStringCellValue());
         }
-
-
-
 
         chart.plot(data, new ChartAxis[] { bottomAxis, leftAxis });
 

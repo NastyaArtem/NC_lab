@@ -13,9 +13,8 @@ public class MergeJavaSort extends Merge {
     }
 
     @Override
-    protected void halfsFill(Integer []leftArray, Integer[] rightArray) {
+    protected void halfsFill(Integer []array) {
         JavaSort javaSort = new JavaSort();
-        leftArray = javaSort.sort(leftArray);
-        rightArray = javaSort.sort(rightArray);
+        array = javaSort.sort(array);
     }
 }

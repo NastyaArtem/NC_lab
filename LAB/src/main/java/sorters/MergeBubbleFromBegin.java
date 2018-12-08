@@ -13,9 +13,8 @@ public class MergeBubbleFromBegin extends Merge{
     }
 
     @Override
-    protected void halfsFill(Integer []leftArray, Integer[] rightArray) {
+    protected void halfsFill(Integer []array) {
         FromBegin fromBegin = new FromBegin();
-        leftArray = fromBegin.sort(leftArray);
-        rightArray = fromBegin.sort(rightArray);
+        array = fromBegin.sort(array);
     }
 }
