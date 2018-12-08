@@ -26,7 +26,14 @@ public abstract class Merge extends AbstractSorter {
 
     @Override
     public Integer[] sort(Integer[] array) {
+
         arrayParts = new ArrayList<>();
+
+        amountOfSubarrays = Runtime.getRuntime().availableProcessors();
+        if(amountOfSubarrays < 2){
+            amountOfSubarrays = 2;
+        }
+        lengthOfSubarrays = array.length / amountOfSubarrays;
         createParts(array);
         sortAllParts();
 
@@ -36,8 +43,6 @@ public abstract class Merge extends AbstractSorter {
 
     private void createParts(Integer[] array) {
 
-        amountOfSubarrays = 6; //change later
-        lengthOfSubarrays = array.length / amountOfSubarrays;
         int currentAmontOfSubarrays = amountOfSubarrays;
         int iterForMainArray = 0;
         while (currentAmontOfSubarrays > 1) {
@@ -55,13 +60,24 @@ public abstract class Merge extends AbstractSorter {
         arrayParts.add(lastSubarray);
     }
 
-    private void sortAllParts() {
+    private synchronized void sortAllParts() {
+        List<Thread> sortThreads = new ArrayList<>();
         for (Integer[] subarray : arrayParts) {
-            halfsFill(subarray);
+            Thread currentThread = new Thread(new SorterThread(subarray));
+            currentThread.start();
+            sortThreads.add(currentThread);
+
+        }
+        try {
+            for (Thread currentThread : sortThreads) {
+                currentThread.join();
+            }
+        }catch (InterruptedException e){
+            e.printStackTrace();
         }
     }
 
-    private Integer[] partsMerge() {
+    private synchronized Integer[] partsMerge() {
 
         while(arrayParts.size() > 1){
             Integer[] resultArray = mergeProcess(arrayParts.get(0), arrayParts.get(1));
@@ -91,18 +107,16 @@ public abstract class Merge extends AbstractSorter {
             i++;
         }
 
-        /**
-         * if right sub array elements are in main array, left array will be added to the end of array
-         */
+        // if right sub array elements are in main array, left array will be added to the end of array
+
         while (l < leftArray.length) {
             array[i] = leftArray[l];
             i++;
             l++;
         }
 
-        /**
-         *if left sub array elements sre in main array, right array will be added to the end of array
-         */
+        //if left sub array elements sre in main array, right array will be added to the end of array
+
         while (r < rightArray.length) {
             array[i] = rightArray[r];
             i++;
@@ -112,5 +126,21 @@ public abstract class Merge extends AbstractSorter {
     }
 
     protected abstract void halfsFill(Integer[] array);
+
+    private class SorterThread implements Runnable{
+        private Integer[] array;
+        SorterThread(Integer[] array){
+            this.array = array;
+        }
+        @Override
+        public void run() {
+
+            halfsFill(array);
+        }
+
+        public Integer[] getArray() {
+            return array;
+        }
+    }
 
 }
