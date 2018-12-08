@@ -26,7 +26,7 @@ import java.util.*;
  */
 public class Analyzer {
 
-    final int MaxArrayLength = 10000;
+    final private int MaxArrayLength = 10000;
     private int length;
 
     private int beginLength = 10;
@@ -48,17 +48,17 @@ public class Analyzer {
                 Annotation[] annotations = currentFillerMethod.getDeclaredAnnotations();
                 for (Annotation fillerAnnotation : annotations) {
 
-                    Map<String, List<Long>> allSortersResult = new TreeMap();
+                    Map<String, List<Long>> allSortersResult = new TreeMap<>();
                     for (Class<? extends AbstractSorter> currentSortClass : allSortClasses) {
 
                         //pass all abstract classes
                         if (!Modifier.isAbstract(currentSortClass.getModifiers())) {
                             List<Long> everyLengthResult = new ArrayList<>();
-                            //while (length < MaxArrayLength) {
+                            while (length < MaxArrayLength) {
                                 length *= increaseValue;
                                 sortingProcess(currentSortClass, currentFillerMethod, everyLengthResult);
 
-                           // }
+                            }
                             try {
                                 allSortersResult.put(currentSortClass.newInstance().toString(), everyLengthResult);
                             } catch (Exception e) {
