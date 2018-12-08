@@ -70,6 +70,8 @@ public class Analyzer {
 
                     result.put(currentFillerMethod.getAnnotation(FillerAnnotation.class).name(), allSortersResult);
                 }
+
+                result.put(currentFillerMethod.getAnnotation(FillerAnnotation.class).name(), allSortersResult);
             }
         }catch (StackOverflowError e){
             System.out.println("Array length is bigger than program can process");
@@ -124,6 +126,9 @@ public class Analyzer {
             e.printStackTrace();
         }
 
+    private Method[] getFillerMethods() {
+        Method[] methods = (new Fillers()).getClass().getMethods();
+        return methods;
     }
 
 

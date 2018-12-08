@@ -87,8 +87,8 @@ public class Output {
         ChartAxis bottomAxis = chart.getChartAxisFactory().createCategoryAxis(AxisPosition.BOTTOM);
         ValueAxis leftAxis = chart.getChartAxisFactory(). createValueAxis(AxisPosition.LEFT);
         leftAxis.setCrosses(AxisCrosses.AUTO_ZERO);
-
         ChartDataSource<Number> xs = DataSources.fromNumericCellRange(sheet, new CellRangeAddress(0, 0, 1, amountOfColumns ));
+
 
         for(int i = 1; i < amountOfRows; i++){
             LineChartSeries series = data.addSeries(xs, DataSources.fromNumericCellRange(sheet, new CellRangeAddress(i, i, 1, amountOfColumns )));

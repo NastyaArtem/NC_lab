@@ -90,6 +90,7 @@ public abstract class Merge extends AbstractSorter {
 
     private Integer[] mergeProcess(Integer[] leftArray, Integer[] rightArray) {
         Integer[] array = new Integer[leftArray.length + rightArray.length];
+
         // iterator for array length
         int i = 0;
         // iterator for left sub array length
@@ -97,6 +98,7 @@ public abstract class Merge extends AbstractSorter {
         // iterator for right sub array length
         int r = 0;
         while ((i < array.length) && (l < leftArray.length) && (r < rightArray.length)) {
+
             if (leftArray[l] < rightArray[r]) {
                 array[i] = leftArray[l];
                 l++;
@@ -110,6 +112,7 @@ public abstract class Merge extends AbstractSorter {
         // if right sub array elements are in main array, left array will be added to the end of array
 
         while (l < leftArray.length) {
+
             array[i] = leftArray[l];
             i++;
             l++;
@@ -118,6 +121,7 @@ public abstract class Merge extends AbstractSorter {
         //if left sub array elements sre in main array, right array will be added to the end of array
 
         while (r < rightArray.length) {
+
             array[i] = rightArray[r];
             i++;
             r++;
